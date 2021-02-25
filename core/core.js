@@ -9,6 +9,7 @@ export let minui;
 
 (function() {
   const UserInterface = (function() {
+    let settings = {};
     let loadStates = {};
 
     // general helper methods, fairly straightforward
@@ -145,7 +146,30 @@ export let minui;
       }
     };
 
+    const attachEvents = function attachEvents(thisArg, eventName) {
+      const fnFactory = function fnFactory() {
+        if (settings.preferAnonymous) {
+          return function(options, fn) {
+            options.type = eventName;
+            return applyEventListener.call(thisArg, fn, options);
+          }
+        } else {
+          return function(fn, options) {
+            options.type = eventName;
+            return applyEventListener.call(thisArg, fn, options);
+          }
+        }
+      };
+
+      Object.getPrototypeOf(thisArg)[eventName] = fnFactory();
+    };
+
     return {
+      setup(newSettings, fn) {
+        settings = newSettings;
+        fn();
+      },
+
       loaded(fn) {
         applyEventListener(fn, {ev: 'DOMContentLoaded'});
       },
@@ -162,14 +186,8 @@ export let minui;
         return eventStack.find(query);
       },
 
-      click(fn, options) {
-        options.type = "click";
-        return applyEventListener(fn, options);
-      },
-
-      focusout(fn, options) {
-        options.type = "focusout";
-        return applyEventListener(fn, options);
+      defEvent(eventName) {
+        attachEvents(this, eventName);
       },
 
       changeStyle(element, styles) {

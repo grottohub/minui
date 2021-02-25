@@ -1,0 +1,23 @@
+{
+  "name": "@grahamr/minui",
+  "version": "0.0.1",
+  "description": "A simplified, minimalistic DOM interface",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grahhhhhhham/minui.git"
+  },
+  "keywords": [
+    "ui",
+    "dom"
+  ],
+  "author": "grahamr",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/grahhhhhhham/minui/issues"
+  },
+  "homepage": "https://github.com/grahhhhhhham/minui#readme"
+}
