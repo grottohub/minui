@@ -12,7 +12,11 @@
   },
   "keywords": [
     "ui",
-    "dom"
+    "dom",
+    "ui manipulation",
+    "dom manipulation",
+    "dom interaction",
+    "dom interface"
   ],
   "author": "grahamr",
   "license": "MIT",

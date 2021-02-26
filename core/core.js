@@ -178,7 +178,12 @@ export let minui;
      */
     const attachEvents = function attachEvents(thisArg, eventName) {
       const eventFactory = function eventFactory() {
-        return function(...args) {
+        /**
+         * Blueprint used with event factory @see defEvent
+         * @param {(Function|Object)} fn - function to apply to event or
+         * @param {(Function|Object)} options - options object containing event info
+         */
+        return function eventBlueprint(...args) {
           let fn, options;
 
           if (typeof args[0] === 'function') {
