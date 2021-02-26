@@ -1,6 +1,6 @@
 {
   "name": "@grahamr/minui",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "A simplified, minimalistic DOM interface",
   "main": "lib/setup.js",
   "scripts": {

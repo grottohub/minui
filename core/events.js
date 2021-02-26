@@ -12,7 +12,7 @@ export let eventStack;
       events[holder][type] = [];
     }
 
-    const addToFnStack = function addToFnStack(holder, type, fnName) {
+    const addToFnStack = function addToFnStack(holder, type, fn) {
       if (events[holder] === undefined) {
         initEventHolder(holder);
       }
@@ -21,30 +21,24 @@ export let eventStack;
         initEventType(holder, type);
       }
 
-      events[holder][type].push(fnName);
+      events[holder][type].push(fn);
     }
 
-    const filterEvents = function filterEvents(query, type) {
-      let filteredEvents = [],
+    const filterEvents = function filterEvents(fn, type) {
+      let filteredEvents = {},
           eventHolders = Object.keys(events);
 
       eventHolders.forEach((holder) => {
         let eventTypes = Object.keys(events[holder]),
-            eventFns = Object.values(events[holder]),
+            eventFns = Object.values(events[holder])[0].map(eventFn => eventFn.name),
             foundEvent = {};
 
         foundEvent[holder] = events[holder];
         
-        if (type === 'event') {
-          if (eventTypes.includes(query)) {
-            filteredEvents.push(foundEvent);
-          }
-        }
-
-        else if (type === 'fn') {
-          if (eventFns[0].includes(query)) {
-            filteredEvents.push(foundEvent);
-          }
+        if(eventTypes.includes(type)) {
+          filteredEvents[holder] = foundEvent[holder];
+        } else if (eventFns.includes(fn)) {
+          filteredEvents[holder] = foundEvent[holder];
         }
       });
 
@@ -52,12 +46,12 @@ export let eventStack;
     };
 
     const findEvents = function findEvent(query) {
-      if (query.elementData) {
-        return events[query.elementData];
+      if (query.query) {
+        return events[query.query];
       }
 
       else {
-        return filterEvents(query.val, query.type);
+        return filterEvents(query.fn, query.type);
       }
     };
 
@@ -78,7 +72,7 @@ export let eventStack;
         let foundEvents = findEvents(query),
             eventExists;
         
-        foundEvents.forEach((holder) => {
+        Object.keys(foundEvents).forEach((holder) => {
           eventExists = Object.keys(holder)[0] === query.existsOn ? true : false;
         });
 

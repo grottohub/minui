@@ -86,7 +86,7 @@ export let minui;
       }
 
       else if (options.props) {
-        return getAllProps(element, options.props);
+        return getAllProps(elements, options.props);
       }
 
       else {
@@ -105,12 +105,30 @@ export let minui;
         return false;
       }
 
+      const bubblingFactory = function bubblingFactory() {
+        return function(event) {
+          let clickedElement = event.target;
+          let classList = convertToArray(clickedElement.classList);
+
+          if (classList.includes(options.class)) {
+            fn();
+          }
+        }
+      };
+
       let eventType = options.ev ? options.ev : options.type,
           eventFn = fn,
           holder;
 
-      if (options.ev) {
+      if (options.document) {
         document.addEventListener(options.ev, fn);
+        holder = 'document';
+        eventStack.add(holder, eventType, eventFn);
+      }
+
+      else if (options.ev && options.type) {
+        let bubbledEvent = bubblingFactory();
+        document.addEventListener(options.ev, bubbledEvent);
         holder = 'document';
         eventStack.add(holder, eventType, eventFn);
       }
@@ -120,7 +138,7 @@ export let minui;
 
         elements.forEach(element => {
           element.addEventListener(eventType, fn);
-          holder = element.id ? element.id : options.class;
+          holder = options.class ? options.class : options.query;
           eventStack.add(holder, eventType, eventFn);
         });
       }
@@ -147,21 +165,26 @@ export let minui;
     };
 
     const attachEvents = function attachEvents(thisArg, eventName) {
-      const fnFactory = function fnFactory() {
-        if (settings.preferAnonymous) {
-          return function(options, fn) {
-            options.type = eventName;
-            return applyEventListener.call(thisArg, fn, options);
+      const eventFactory = function eventFactory() {
+        return function(...args) {
+          let fn, options;
+
+          if (typeof args[0] === 'function') {
+            fn = args[0];
+            options = args[1];
+          } else {
+            fn = args[1];
+            options = args[0];
           }
-        } else {
-          return function(fn, options) {
-            options.type = eventName;
-            return applyEventListener.call(thisArg, fn, options);
-          }
+
+          if (options.bubble !== false) options.ev = eventName;
+
+          options.type = eventName;
+          return applyEventListener.call(thisArg, fn, options);
         }
       };
 
-      Object.getPrototypeOf(thisArg)[eventName] = fnFactory();
+      Object.getPrototypeOf(thisArg)[eventName] = eventFactory();
     };
 
     return {
@@ -171,7 +194,7 @@ export let minui;
       },
 
       loaded(fn) {
-        applyEventListener(fn, {ev: 'DOMContentLoaded'});
+        applyEventListener(fn, {ev: 'DOMContentLoaded', document: true});
       },
 
       get(options) {
@@ -188,6 +211,10 @@ export let minui;
 
       defEvent(eventName) {
         attachEvents(this, eventName);
+      },
+
+      defEvents(events) {
+        events.forEach(event => this.defEvent(event), this);
       },
 
       changeStyle(element, styles) {
