@@ -25,19 +25,19 @@ __Note__: This is still very early in development, you will most likely encounte
 minUI is available via npm (will be working on CDN option soon):
 
 ```
-    npm i @grahamr/minui
+npm i @grahamr/minui
 ```
 
 If you're not using a build tool, you can import it like so:
 
 ```
-    import _ui from './node_modules/@grahamr/minui/lib/setup.js';
+import _ui from './node_modules/@grahamr/minui/lib/setup.js';
 ```
 
 If you're using `_ui` in a script directly referenced in HTML, make sure it is a module:
 
 ```
-    <script type='module' src='app.js'></script>
+<script type='module' src='app.js'></script>
 ```
 
 ## Examples
@@ -49,17 +49,17 @@ Goal: log 'clicked' when a button with a specific ID is pressed
 minUI:
 
 ```
-    _ui.loaded(() => {
-      _ui.click({id: 'btn'}, () => console.log('clicked'));
-    });
+_ui.loaded(() => {
+  _ui.click({id: 'btn'}, () => console.log('clicked'));
+});
 ```
 
 Vanilla:
 
 ```
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('btn').onclick = () => console.log('clicked');
-    });
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btn').onclick = () => console.log('clicked');
+});
 ```
 
 Goal: run a validation function on input fields based on class if a user clicks outside of the input area
@@ -67,27 +67,27 @@ Goal: run a validation function on input fields based on class if a user clicks 
 minUI:
 
 ```
-    function validation(event) { ... }
+function validation(event) { ... }
 
-    _ui.loaded(() => {
-      _ui.focusout(validation, {class: 'validate'});
-    });
+_ui.loaded(() => {
+  _ui.focusout(validation, {class: 'validate'});
+});
 ```
 
 Vanilla (using event bubbling):
 
 ```
-    function validation(event) { ... }
-    
-    document.addEventListener('focusout', (event) => {
-      let clickedElement = event.target;
-      // convert to array since we need collection methods
-      let classList = Array.prototype.slice.call(clickedElement.classList);
+function validation(event) { ... }
 
-      if (classList.includes('validate')) {
-        validation(event);
-      }
-    });
+document.addEventListener('focusout', (event) => {
+  let clickedElement = event.target;
+  // convert to array since we need collection methods
+  let classList = Array.prototype.slice.call(clickedElement.classList);
+
+  if (classList.includes('validate')) {
+    validation(event);
+  }
+});
 ```
 
 ### General Examples
@@ -95,53 +95,53 @@ Vanilla (using event bubbling):
 Detailed API docs coming soon
 
 ```
-    const clickBtn = function clickButton() {
-      // ... lots of complicated function code
-      console.log('done with complicated function!');
-    };
+const clickBtn = function clickButton() {
+  // ... lots of complicated function code
+  console.log('done with complicated function!');
+};
 
-    _ui.loaded(() => {
+_ui.loaded(() => {
 
-      // single element
-      _ui.click(clickBtn, {id: 'testBtn'});
+  // single element
+  _ui.click(clickBtn, {id: 'testBtn'});
 
-      // multiple elements
+  // multiple elements
 
-      // via class
-      _ui.click(clickBtn, {class: 'btn'});
+  // via class
+  _ui.click(clickBtn, {class: 'btn'});
 
-      // via query selector
-      _ui.click(clickBtn, {query: 'button.btn'});
+  // via query selector
+  _ui.click(clickBtn, {query: 'button.btn'});
 
-      // you can swap argument order, too, for anonymous functions (or if it's the order you prefer)
-      _ui.click({id: 'testBtn'}, () => console.log('debug!'));
+  // you can swap argument order, too, for anonymous functions (or if it's the order you prefer)
+  _ui.click({id: 'testBtn'}, () => console.log('debug!'));
 
-      // you can even specify how the event is attached (bubbling vs. per-element)
-      _ui.click(clickBtn, {class: 'btn', bubble: false}); // for collections, bubble is true by default, false will apply it to individual elements
+  // you can even specify how the event is attached (bubbling vs. per-element)
+  _ui.click(clickBtn, {class: 'btn', bubble: false}); // for collections, bubble is true by default, false will apply it to individual elements
 
-      // minUI also implements an internal event stack, so you can inspect events you've created (very WIP)
-      console.log(_ui.events());
-      console.log(_ui.findEvents({query: 'btn'})); // filter by query selector
-      console.log(_ui.findEvents({type: 'click'})); // filter by event type
-      console.log(_ui.findEvents({fn: 'clickButton'})); // filter by function name
+  // minUI also implements an internal event stack, so you can inspect events you've created (very WIP)
+  console.log(_ui.events());
+  console.log(_ui.findEvents({query: 'btn'})); // filter by query selector
+  console.log(_ui.findEvents({type: 'click'})); // filter by event type
+  console.log(_ui.findEvents({fn: 'clickButton'})); // filter by function name
 
-      // retrieving DOM nodes works just like it does when using an option object for applying events
-      let testBtn = _ui.get({id: 'testBtn'}); // returns single element
-      let buttons = _ui.get({class: 'btn'}); // returns array
-      let buttons2 = _ui.get({query: 'button.btn'}); // returns array
+  // retrieving DOM nodes works just like it does when using an option object for applying events
+  let testBtn = _ui.get({id: 'testBtn'}); // returns single element
+  let buttons = _ui.get({class: 'btn'}); // returns array
+  let buttons2 = _ui.get({query: 'button.btn'}); // returns array
 
-      // retrieving properties of an element
-      let btnProps = _ui.get({id: 'testBtn', props: ['value', 'disabled']});
-      console.log(btnProps);
+  // retrieving properties of an element
+  let btnProps = _ui.get({id: 'testBtn', props: ['value', 'disabled']});
+  console.log(btnProps);
 
-      // retrieving properties of a group of elements
-      let allBtnProps = _ui.get({class: 'btn', props: ['id', 'value', 'disabled']});
-      console.log(allBtnProps);
+  // retrieving properties of a group of elements
+  let allBtnProps = _ui.get({class: 'btn', props: ['id', 'value', 'disabled']});
+  console.log(allBtnProps);
 
-      // if an event doesn't exist on the API, add it
-      _ui.defEvent('wheel');
-      _ui.wheel({document: true}, () => console.log('whee!')); // to attach to the base, use document: true
-    });
+  // if an event doesn't exist on the API, add it
+  _ui.defEvent('wheel');
+  _ui.wheel({document: true}, () => console.log('whee!')); // to attach to the base, use document: true
+});
 ```
 
 ### Modifying setup.js
@@ -151,26 +151,26 @@ This will be streamlined in the future, but:
 I've only included a couple common events to be applied at initialization, if you want to add more in setup you can. Navigate to `node_modules/@grahamr/minui/lib/setup.js`
 
 ```
-    import {minui as _ui} from '../core/core.js';
+import {minui as _ui} from '../core/core.js';
 
-    // this will probably have actual settings soon
-    let settings = {};
+// this will probably have actual settings soon
+let settings = {};
 
-    _ui.setup(settings, () => {
-      // just add the events you want to the array
-      _ui.defEvents([
-        'click',
-        'keypress',
-        'keydown',
-        'keyup',
-        'focus',
-        'focusin',
-        'focusout',
-        'blur',
-        'mouseenter',
-        'mouseleave'
-      ]);
-    });
+_ui.setup(settings, () => {
+  // just add the events you want to the array
+  _ui.defEvents([
+    'click',
+    'keypress',
+    'keydown',
+    'keyup',
+    'focus',
+    'focusin',
+    'focusout',
+    'blur',
+    'mouseenter',
+    'mouseleave'
+  ]);
+});
 
-    export default _ui;
+export default _ui;
 ```
