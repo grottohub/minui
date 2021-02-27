@@ -4,6 +4,7 @@
  */
 
 import {eventStack} from './events.js';
+import {toArray, addEv, bubblingFactory} from './helpers.js';
 
 export let minui;
 
@@ -15,12 +16,6 @@ export let minui;
   const UserInterface = (function() {
     let settings = {};
     let loadStates = {};
-
-    // general helper methods, fairly straightforward
-
-    const convertToArray = function convertToArray(item) {
-      return Array.prototype.slice.call(item);
-    };
 
     /**
      * Returns the desired properties from an HTMLElement as a key-value pair object
@@ -45,13 +40,9 @@ export let minui;
      * @returns {Array} containing retrieved props for each element (includes undefined)
      */
     const getAllProps = function getAllProps(elements, props) {
-      let allProps = [];
-
-      elements.forEach((element) => {
-        allProps.push(getProps(element, props));
+      return elements.map((element) => {
+        getProps(element, props);
       });
-
-      return allProps;
     };
 
     /**
@@ -65,11 +56,11 @@ export let minui;
       }
 
       else if (options.class) {
-        return convertToArray(document.getElementsByClassName(options.class));
+        return toArray(document.getElementsByClassName(options.class));
       }
 
       else if (options.query) {
-        return convertToArray(document.querySelectorAll(options.query));
+        return toArray(document.querySelectorAll(options.query));
       }
     };
 
@@ -109,66 +100,30 @@ export let minui;
         return false;
       }
 
-      /**
-       * Function factory for events that need to be bubbled
-       * @returns {Function} function that invokes method when desired target triggers event
-       */
-      const bubblingFactory = function bubblingFactory() {
-        return function(event) {
-          let clickedElement = event.target;
-          let classList = convertToArray(clickedElement.classList);
-
-          if (classList.includes(options.class)) {
-            fn();
-          }
-        }
-      };
-
       let eventType = options.ev ? options.ev : options.type,
-          eventFn = fn,
-          holder;
+          holder = 'document';
 
-      if (options.document) {
-        document.addEventListener(options.ev, fn);
-        holder = 'document';
-        eventStack.add(holder, eventType, eventFn);
-      }
-
-      else if (options.ev && options.type) {
-        let bubbledEvent = bubblingFactory();
-        document.addEventListener(options.ev, bubbledEvent);
-        holder = 'document';
-        eventStack.add(holder, eventType, eventFn);
+      if (options.document || options.bubble) {
+        let eventFn = options.bubble ? bubblingFactory(fn, options.class) : fn;
+        addEv(document, options.ev, eventFn, eventStack, holder);
       }
       
       else {
         let elements = getElements(options);
+        holder = options.class ? options.class : options.query;
 
         elements.forEach(element => {
-          element.addEventListener(eventType, fn);
-          holder = options.class ? options.class : options.query;
-          eventStack.add(holder, eventType, eventFn);
+          addEv(element, eventType, fn, eventStack, holder);
         });
       }
 
       let eventAdded = {
         type: "fn",
-        val: eventFn,
+        val: fn,
         existsOn: holder,
       };
 
       return eventStack.exists(eventAdded);
-    };
-
-    /**
-     * General style application for elements
-     * @param {HTMLElement} element - HTMLElement to apply styles to 
-     * @param {Object} styles - a key-value pair object representing the desired styles
-     */
-    const applyStyles = function applyStyles(element, styles) {
-      for (var newStyle in styles) {
-        element.style[newStyle] = styles[newStyle];
-      }
     };
 
     /**
@@ -194,7 +149,7 @@ export let minui;
             options = args[0];
           }
 
-          if (options.bubble !== false) options.ev = eventName;
+          if (options.bubble !== false) options.bubble = true;
 
           options.type = eventName;
           return applyEventListener.call(thisArg, fn, options);
@@ -275,7 +230,9 @@ export let minui;
        * @param {*} styles - key-value pair representing style values
        */
       changeStyle(element, styles) {
-        applyStyles(element, styles);
+        for (var newStyle in styles) {
+          element.style[newStyle] = styles[newStyle];
+        }
       },
 
       /**
