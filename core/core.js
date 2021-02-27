@@ -23,7 +23,7 @@ export let minui;
      * @param {string[]} props - array containing property names to select
      * @returns {Object} object containing key-value pairs of retrieved props (includes undefined)
      */
-    const getProps = function getProps(element, props) {
+    const getProps = function getProperties(element, props) {
       let selectedProps = {};
 
       props.forEach((prop) => {
@@ -39,7 +39,7 @@ export let minui;
      * @param {string[]} props - array containing property names to select
      * @returns {Array} containing retrieved props for each element (includes undefined)
      */
-    const getAllProps = function getAllProps(elements, props) {
+    const getAllProps = function getAllProperties(elements, props) {
       return elements.map((element) => {
         getProps(element, props);
       });
@@ -50,7 +50,7 @@ export let minui;
      * @param {Object} options - a key-value pair object for determining which document method to use
      * @returns {HTMLElement[]} containing individual HTMLElement objects 
      */
-    const getElements = function getElements(options) {
+    const getElem = function getElements(options) {
       if (options.id) {
         return [document.getElementById(options.id)];
       }
@@ -69,8 +69,8 @@ export let minui;
      * @param {Object} options - a key-value pair object for determining which internal retrieval method to use
      * @returns {*} data structure determined by internal methods and intent evaluated from options 
      */
-    const getFromInterface = function getFromInterface(options) {
-      let elements = getElements(options);
+    const getFromUI = function getFromInterface(options) {
+      let elements = getElem(options);
       
       if (options.id && options.props) {
         return getProps(elements[0], options.props);
@@ -187,7 +187,7 @@ export let minui;
        * @param {string[]} options.props - desired props to retrieve from HTMLElement(s)
        */
       get(options) {
-        return getFromInterface(options);
+        return getFromUI(options);
       },
 
       /**
