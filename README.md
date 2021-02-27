@@ -31,7 +31,7 @@ npm i @grahamr/minui
 If you're not using a build tool, you can import it like so:
 
 ```
-import _ui from './node_modules/@grahamr/minui/lib/setup.js';
+import _ui from './node_modules/@grahamr/minui/app/setup.js';
 ```
 
 If you're using `_ui` in a script directly referenced in HTML, make sure it is a module:
@@ -113,13 +113,17 @@ _ui.loaded(() => {
   // via query selector
   _ui.click(clickBtn, {query: 'button.btn'});
 
-  // you can swap argument order, too, for anonymous functions (or if it's the order you prefer)
+  // you can swap argument order, too, for anonymous functions
+  // (or if it's the order you prefer)
   _ui.click({id: 'testBtn'}, () => console.log('debug!'));
 
   // you can even specify how the event is attached (bubbling vs. per-element)
-  _ui.click(clickBtn, {class: 'btn', bubble: false}); // for collections, bubble is true by default, false will apply it to individual elements
+  // for collections, bubble is true by default,
+  // false will apply it to individual elements
+  _ui.click(clickBtn, {class: 'btn', bubble: false});
 
-  // minUI also implements an internal event stack, so you can inspect events you've created (very WIP)
+  // minUI also implements an internal event stack,
+  // so you can inspect events you've created (very WIP)
   console.log(_ui.events());
   console.log(_ui.findEvents({query: 'btn'})); // filter by query selector
   console.log(_ui.findEvents({type: 'click'})); // filter by event type
@@ -140,7 +144,8 @@ _ui.loaded(() => {
 
   // if an event doesn't exist on the API, add it
   _ui.defEvent('wheel');
-  _ui.wheel({document: true}, () => console.log('whee!')); // to attach to the base, use document: true
+  // to attach to the base, use document: true
+  _ui.wheel({document: true}, () => console.log('whee!'));
 });
 ```
 
@@ -148,7 +153,7 @@ _ui.loaded(() => {
 
 This will be streamlined in the future, but:
 
-I've only included a couple common events to be applied at initialization, if you want to add more in setup you can. Navigate to `node_modules/@grahamr/minui/lib/setup.js`
+I've only included a couple common events to be applied at initialization, if you want to add more in setup you can. Navigate to `node_modules/@grahamr/minui/app/setup.js`
 
 ```
 import {minui as _ui} from '../core/core.js';
