@@ -136,6 +136,14 @@ _ui.loaded(() => {
   let buttons = _ui.get({class: 'btn'}); // returns array
   let buttons2 = _ui.get({query: 'button.btn'}); // returns array
 
+  // for very specific elements, use query selectors
+  let btn = _ui.get({query: 'div.container>button.btn.btn-warning'});
+
+  // retrieve relational elements
+  let parent = _ui.get({parentOf: {id: 'testBtn'}}); // parent element
+  let child = _ui.get({childOf: {id: 'testDiv'}}); // first child
+  let children = _ui.get({childrenOf: {id: 'testDiv'}}); // all children
+
   // retrieving properties of an element
   let btnProps = _ui.get({id: 'testBtn', props: ['value', 'disabled']});
   console.log(btnProps);
