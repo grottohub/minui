@@ -94,7 +94,7 @@ document.addEventListener('focusout', (event) => {
 
 Detailed API docs coming soon
 
-__Note__: When attaching events via `query`, minUI supports the combinators listed [here](https://www.w3schools.com/cssref/css_selectors.asp) up to attributes, and excluding `#id` and `*`. Use `id` instead when attaching by id.
+__Note__: [Here](https://www.w3schools.com/cssref/css_selectors.asp) is information regarding the `query` option. Prefer `id: 'testBtn'` instead when attaching by id instead of `query: '#testBtn'`.
 
 ```
 const clickBtn = function clickButton() {
@@ -105,7 +105,14 @@ const clickBtn = function clickButton() {
 _ui.loaded(() => {
 
   // single element
+
+  // via options object
   _ui.click(clickBtn, {id: 'testBtn'});
+
+  // passing in element directly
+  let btn = _ui.get({id: 'testBtn'});
+
+  _ui.click(clickBtn, btn);
 
   // multiple elements
 
