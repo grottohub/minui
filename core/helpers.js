@@ -1,5 +1,3 @@
-import {parser} from './parser.js';
-
 export const toArray = function convertToArray(item) {
   return Array.prototype.slice.call(item);
 };
@@ -7,6 +5,10 @@ export const toArray = function convertToArray(item) {
 export const addEv = function addEvent(...args) {
   args[0].addEventListener(args[1], args[2]);
   args[3].add(args[4], args[1], args[2]);
+};
+
+export const isElement = function isElement(element) {
+  return element instanceof Element || element instanceof HTMLElement;
 };
 
 /**
@@ -22,44 +24,18 @@ export const bubblingFactory = function bubblingFactory(fn, triggerOpts) {
     let trigger;
 
     if (triggerOpts.query) {
-      let req = parser.convert(triggerOpts.query),
-          tags = Object.keys(req.tags),
-          tagVals = Object.values(req.tags);
+      let selectedElements = toArray(document.querySelectorAll(triggerOpts.query));
 
-      if (tags.length === 0) {
-        classList.sort();
-        trigger = req.classList.sort().every((klass, idx) => {
-          classList[idx] === klass;
-        });
-      } else {
-        if (tagVals.every(val => typeof val === 'boolean')) {
-          trigger = tags.includes(clickedElement.tagName.toLowerCase());
-        } else if (tagVals[0].parent) {
-          trigger = tags.some((_, idx) => {
-            return tagVals[idx].parent === clickedElement.parentElement.tagName.toLowerCase();
-          });
-        } else if (tagVals[0].prevSibling) {
-          if (tags.includes(clickedElement.tagName.toLowerCase())) {
-            trigger = tags.some((_, idx) => {
-              if (clickedElement.previousElementSibling) {
-                return tagVals[idx].prevSibling === clickedElement.previousElementSibling.tagName.toLowerCase();
-              } else {
-                return false;
-              }
-            });
-          } else {
-            trigger = false;
-          }
-        }
-      }
+      trigger = selectedElements.includes(clickedElement);
+    } else if (isElement(triggerOpts)) {
+      trigger = clickedElement === triggerOpts;
     } else {
       trigger = classList.includes(triggerOpts.class);
     }
+    
 
     if (trigger) {
       fn(event);
     }
-
-    parser.clear();
   }
 };
