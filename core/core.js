@@ -70,7 +70,28 @@ export let minui;
      * @returns {*} data structure determined by internal methods and intent evaluated from options 
      */
     const getFromUI = function getFromInterface(options) {
-      let elements = getElem(options);
+      let elemOpts = options,
+          parent = options.parentOf,
+          child = options.childOf,
+          children = options.childrenOf;
+
+      if (parent) {
+        elemOpts = options.parentOf;
+      } else if (child) {
+        elemOpts = options.childOf;
+      } else if (children) {
+        elemOpts = options.childrenOf;
+      }
+
+      let elements = getElem(elemOpts);
+
+      if (parent) {
+        return elements[0].parentElement;
+      } else if (child) {
+        return elements[0].firstElementChild;
+      } else if (children) {
+        return toArray(elements[0].children);
+      }
       
       if (options.id && options.props) {
         return getProps(elements[0], options.props);
