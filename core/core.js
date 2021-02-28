@@ -4,7 +4,7 @@
  */
 
 import {eventStack} from './events.js';
-import {toArray, addEv, bubblingFactory} from './helpers.js';
+import {toArray, addEv, isElement, bubblingFactory} from './helpers.js';
 
 export let minui;
 
@@ -121,7 +121,7 @@ export let minui;
         return false;
       }
 
-      let eventType = options.ev ? options.ev : options.type,
+      let eventType = options.ev ? options.ev : options.evType,
           holder = 'document';
 
       if (!options.id && (options.document || options.bubble)) {
@@ -130,9 +130,9 @@ export let minui;
       }
       
       else {
-        let elements = getElem(options);
+        let elements = isElement(options) ? [options] : getElem(options);
         holder = options.class ? options.class : options.query;
-        if (options.id) holder = options.id;
+        if (options.id !== undefined && options.id !== '') holder = options.id;
 
         elements.forEach(element => {
           addEv(element, eventType, fn, eventStack, holder);
@@ -171,9 +171,9 @@ export let minui;
             options = args[0];
           }
 
-          if (options.bubble === undefined) options.bubble = true;
-
-          options.type = eventName;
+          if (!isElement(options) && options.bubble === undefined) options.bubble = true;
+          console.log(options.evType);
+          options.evType = eventName;
           return applyEventListener.call(thisArg, fn, options);
         }
       };
