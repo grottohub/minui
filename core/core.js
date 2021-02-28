@@ -103,14 +103,15 @@ export let minui;
       let eventType = options.ev ? options.ev : options.type,
           holder = 'document';
 
-      if (options.document || options.bubble) {
-        let eventFn = options.bubble ? bubblingFactory(fn, options.class) : fn;
-        addEv(document, options.ev, eventFn, eventStack, holder);
+      if (!options.id && (options.document || options.bubble)) {
+        let eventFn = options.bubble ? bubblingFactory(fn, options) : fn;
+        addEv(document, eventType, eventFn, eventStack, holder);
       }
       
       else {
-        let elements = getElements(options);
+        let elements = getElem(options);
         holder = options.class ? options.class : options.query;
+        if (options.id) holder = options.id;
 
         elements.forEach(element => {
           addEv(element, eventType, fn, eventStack, holder);
@@ -149,7 +150,7 @@ export let minui;
             options = args[0];
           }
 
-          if (options.bubble !== false) options.bubble = true;
+          if (options.bubble === undefined) options.bubble = true;
 
           options.type = eventName;
           return applyEventListener.call(thisArg, fn, options);
