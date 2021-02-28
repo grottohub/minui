@@ -38,8 +38,7 @@ export const bubblingFactory = function bubblingFactory(fn, triggerOpts) {
           trigger = tags.some((_, idx) => {
             return tagVals[idx].parent === clickedElement.parentElement.tagName.toLowerCase();
           });
-          console.log(trigger);
-        } else if (req.tags[tags[0]].prevSibling) {
+        } else if (tagVals[0].prevSibling) {
           if (tags.includes(clickedElement.tagName.toLowerCase())) {
             trigger = tags.some((_, idx) => {
               if (clickedElement.previousElementSibling) {
@@ -58,7 +57,7 @@ export const bubblingFactory = function bubblingFactory(fn, triggerOpts) {
     }
 
     if (trigger) {
-      fn();
+      fn(event);
     }
 
     parser.clear();
