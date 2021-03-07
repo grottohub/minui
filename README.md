@@ -22,8 +22,20 @@ __Note__: This is still very early in development, you will most likely encounte
 
 ## Download
 
-minUI is available via npm (will be working on CDN option soon):
+minUI is available via npm or CDN.
 
+via CDN:
+
+```
+<script src="https://cdn.jsdelivr.net/gh/grahhhhhhham/minui@0.0.7/dist/core.min.js"></script>
+<script>
+_ui.loaded(() => {
+  ...
+});
+</script>
+```
+
+via npm:
 ```
 npm i @grahamr/minui
 ```
