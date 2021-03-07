@@ -271,7 +271,8 @@ export let minui;
       },
 
       state(element, state) {
-        blueprints.state(element, state);
+        let bpElement = this.get(element);
+        blueprints.state(bpElement, state);
       },
 
       init() {
