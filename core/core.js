@@ -4,6 +4,7 @@
  */
 
 import {eventStack} from './events.js';
+import {blueprints} from './blueprints.js';
 import {toArray, addEv, isElement, bubblingFactory} from './helpers.js';
 
 export let minui;
@@ -172,7 +173,6 @@ export let minui;
           }
 
           if (!isElement(options) && options.bubble === undefined) options.bubble = true;
-          console.log(options.evType);
           options.evType = eventName;
           return applyEventListener.call(thisArg, fn, options);
         }
@@ -266,44 +266,12 @@ export let minui;
         classList.forEach(klass => element.classList.toggle(klass));
       },
 
-      /**
-       * Defines a loading state for an element (WIP)
-       * @param {*} options 
-       */
-      defLoadState(options) {
-        loadStates[options.element] = {
-          default: options.default,
-          loading: options.loading,
-          success: options.success,
-          error: options.error,
-        };
+      make(blueprint) {
+        return blueprints.make(blueprint);
       },
 
-      /**
-       * Initiates load state for elements (WIP)
-       * @param {*} elements 
-       */
-      startLoad(elements) {
-        let elementList = this.get({query: elements});
-
-        elementList.forEach((element) => {
-          element.className = '';
-          element.classList.add(...loadStates[elements].loading);
-        });
-      },
-
-      /**
-       * Stops the load state for an element with a specific success type (WIP)
-       * @param {*} elements 
-       * @param {*} successType 
-       */
-      stopLoad(elements, successType) {
-        let elementList = this.get({query: elements});
-
-        elementList.forEach((element) => {
-          element.classList.remove(...loadStates[elements].loading);
-          element.classList.add(...loadStates[elements][successType]);
-        });
+      state(element, state) {
+        blueprints.state(element, state);
       },
 
       init() {
