@@ -493,9 +493,12 @@ let _ui;
         },
   
         state(element, state) {
+          let bpElement = element;
+
           if (!isElement(element)) {
-            let bpElement = this.get(element);
+            bpElement = this.get(element);
           }
+          
           blueprints.state(bpElement, state);
         },
   
