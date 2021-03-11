@@ -4,7 +4,7 @@ export let blueprints;
   const Blueprints = (function () {
     let allBlueprints = {};
 
-    const createElement = function createElementFromBlueprint(blueprint) {
+    const createElement = function createElementFromBlueprint(blueprint, content) {
       let element = document.createElement(blueprint.tag);
       allBlueprints[blueprint.attr.blueprint] = blueprint;
       
@@ -12,13 +12,37 @@ export let blueprints;
         element[attribute] = blueprint.attr[attribute];
       });
 
+      // console.log(blueprint.content);
+      // console.log(content);
+      if (blueprint.content) {
+        content.forEach((data, idx) => {
+          let blueprintName = blueprint.attr.blueprint;
+          
+          if (typeof data === "string") {
+            element[blueprint.content[idx]] = data;
+          } 
+          
+          else if (data[blueprintName]) {
+            data[blueprintName].forEach((childData, idx) => {
+              element[blueprint.content[idx]] = childData;
+            });
+          }
+        });
+      }
+
       element.classList.add(...blueprint.classes);
+
+      if (blueprint.children) {
+        let children = blueprint.children.map(child => createElement(child, content));
+
+        children.forEach(child => element.appendChild(child));
+      }
 
       return element;
     };
 
-    const createFragment = function createFragmentForBlueprint(blueprint) {
-      let element = createElement(blueprint),
+    const createFragment = function createFragmentForBlueprint(blueprint, content) {
+      let element = createElement(blueprint, content),
           fragment = new DocumentFragment();
 
       fragment.appendChild(element);
@@ -36,8 +60,8 @@ export let blueprints;
     };
 
     return {
-      make(blueprint) {
-        return createFragment(blueprint);
+      make(blueprint, content) {
+        return createFragment(blueprint, content);
       },
 
       state(element, state) {

@@ -266,8 +266,8 @@ export let minui;
         classList.forEach(klass => element.classList.toggle(klass));
       },
 
-      make(blueprint) {
-        return blueprints.make(blueprint);
+      make(blueprint, content = []) {
+        return blueprints.make(blueprint, content);
       },
 
       state(element, state) {
