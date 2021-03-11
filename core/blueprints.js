@@ -6,17 +6,23 @@ export let blueprints;
 
     const createElement = function createElementFromBlueprint(blueprint, content) {
       let element = document.createElement(blueprint.tag);
-      allBlueprints[blueprint.attr.blueprint] = blueprint;
+      allBlueprints[blueprint.props.blueprint] = blueprint;
       
-      Object.keys(blueprint.attr).forEach(attribute => {
-        element[attribute] = blueprint.attr[attribute];
+      Object.keys(blueprint.props).forEach(prop => {
+        element[prop] = blueprint.props[prop];
       });
+
+      if (blueprint.attr) {
+        Object.keys(blueprint.attr).forEach(attribute => {
+          element.setAttribute(attribute, blueprint.attr[attribute]);
+        });
+      }
 
       // console.log(blueprint.content);
       // console.log(content);
       if (blueprint.content) {
         content.forEach((data, idx) => {
-          let blueprintName = blueprint.attr.blueprint;
+          let blueprintName = blueprint.props.blueprint;
           
           if (typeof data === "string") {
             element[blueprint.content[idx]] = data;

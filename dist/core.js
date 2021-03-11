@@ -52,29 +52,35 @@ let _ui;
   
       const createElement = function createElementFromBlueprint(blueprint, content) {
         let element = document.createElement(blueprint.tag);
-        allBlueprints[blueprint.attr.blueprint] = blueprint;
-        
+        allBlueprints[blueprint.props.blueprint] = blueprint;
+      
+      Object.keys(blueprint.props).forEach(prop => {
+        element[prop] = blueprint.props[prop];
+      });
+
+      if (blueprint.attr) {
         Object.keys(blueprint.attr).forEach(attribute => {
-          element[attribute] = blueprint.attr[attribute];
+          element.setAttribute(attribute, blueprint.attr[attribute]);
         });
-  
-        // console.log(blueprint.content);
-        // console.log(content);
-        if (blueprint.content) {
-          content.forEach((data, idx) => {
-            let blueprintName = blueprint.attr.blueprint;
-            
-            if (typeof data === "string") {
-              element[blueprint.content[idx]] = data;
-            } 
-            
-            else if (data[blueprintName]) {
-              data[blueprintName].forEach((childData, idx) => {
-                element[blueprint.content[idx]] = childData;
-              });
-            }
-          });
-        }
+      }
+
+      // console.log(blueprint.content);
+      // console.log(content);
+      if (blueprint.content) {
+        content.forEach((data, idx) => {
+          let blueprintName = blueprint.props.blueprint;
+          
+          if (typeof data === "string") {
+            element[blueprint.content[idx]] = data;
+          } 
+          
+          else if (data[blueprintName]) {
+            data[blueprintName].forEach((childData, idx) => {
+              element[blueprint.content[idx]] = childData;
+            });
+          }
+        });
+      }
   
         element.classList.add(...blueprint.classes);
   
